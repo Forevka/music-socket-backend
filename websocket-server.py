@@ -29,6 +29,7 @@ async def time(websocket, path):
             await asyncio.sleep(sleep_for)
     except websockets.exceptions.ConnectionClosedError:
         print("user disconected")
+    finally:
         await unregister(websocket)
 
 start_server = websockets.serve(time, "127.0.0.1", 5678)
