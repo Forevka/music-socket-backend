@@ -161,16 +161,17 @@ async def unregister(websocket):
     print("left user "+str(websocket))
 
 
-async def time(websocket, path):
+async def process(websocket, path):
     user = await register(websocket)
     try:
-        while True:
-            user_info = user.get_info()
+        async for message in websocket:
+            request = await websocket.recv()
+            print(request)
+            #user_info = user.get_info()
             #await websocket.send(user_info)
-            print(user_info)
-            print(f"Sended to user {user}")
-            await user_info.send_to_user()
-            await asyncio.sleep(1)
+            #print(user_info)
+            #print(f"Sended to user {user}")
+            #await user_info.send_to_user()
     except websockets.exceptions.ConnectionClosedError:
         print("user disconected")
     finally:
@@ -181,7 +182,7 @@ ch_pool = ChannelPool()
 ch_pool.add_channel(name = 'Default Channel')
 ch_pool.channel_list()
 
-start_server = websockets.serve(time, "127.0.0.1", 5678)
+start_server = websockets.serve(process, "127.0.0.1", 5678)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
