@@ -31,8 +31,9 @@ class User(ContextInstanceMixin):
         return ResponsePacket(my_channel.song_id, my_channel.current_song_time,
                                 my_channel.id, self.socket)
 
-    def answer(self, body):
-        self.websocket.send(json.dumps(body))
+    async def answer(self, body):
+        a = await self.websocket.send(json.dumps(body))
+        print(a)
 
     def __str__(self):
         return f"User ID {self.id} on channel {self.on_channel_id}"

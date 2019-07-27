@@ -52,7 +52,6 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         return self.loop.create_task(self.update_handlers.notify(request))
 
     async def _process_event(self, request, data: dict):
-        #data['_request'] = viber_request
         logger.debug(f"processing event {request}")
         if request:
             result = await self.event_handler.notify(request, data)

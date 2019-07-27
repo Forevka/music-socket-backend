@@ -99,10 +99,12 @@ s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
 
+
 @dp.event_handler(EventTypeFilter('Ping'))
 async def echo(event: WebsocketEvent, data):
     logger.info(event)
-    logger.info('hello from ping')
+    #u = User.get_current()
+    await event.answer({'user': str(User.get_current())})
     return True
 
 ch_pool = ChannelPool()

@@ -22,8 +22,8 @@ async def hello():
         while True:
             print(f"> start")
             await websocket.send(create_request(PossibleEvents.Ping))
+            server_sent = await websocket.recv()
+            print(f"> Server sent {server_sent}")
             await asyncio.sleep(1)
-            #server_sent = await websocket.recv()
-            #print(f"> Server sent {server_sent}")
 
 asyncio.get_event_loop().run_until_complete(hello())
