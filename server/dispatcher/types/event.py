@@ -21,7 +21,12 @@ class WebsocketEvent(WebsocketRequestEvent):
     timestamp: int = attr.ib()
     body: int = attr.ib()
 
-    async def answer(self, body):
+    async def answer(self, body = ''):
         from ..types import User
 
         await User.get_current().answer(body)
+
+    def user(self):
+        from ..types import User
+
+        return User.get_current()

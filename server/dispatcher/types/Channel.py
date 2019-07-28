@@ -40,5 +40,13 @@ class Channel(ContextInstanceMixin):
         if user in self.users:
             self.users.remove(user)
 
+    def to_dict(self):
+        return {"id": self.id,
+                    "name": self.name,
+                    "song": self.song_id,
+                    "song_time": self.current_song_time,
+                    "user_count": len(self.users),
+                }
+
     def __str__(self):
         return f"Channel: Name {self.name} ID {self.id}"

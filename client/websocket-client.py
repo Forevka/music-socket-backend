@@ -11,19 +11,25 @@ class AutoName(Enum):
 class PossibleEvents(Enum):
     Ping = auto()
     GetInfo = auto()
-    GetTime = auto()
+    GetChannels = auto()
+    GetUnknown = auto()
 
 def create_request(event, body = '1'):
     return json.dumps({"event": event.name, "body": body, "timestamp": time.time()})
 
 async def hello():
     uri = "ws://localhost:5678"
+    my_channel = {}
     async with websockets.connect(uri) as websocket:
+        print(f"> waiting for info from server")
+        me = await websocket.recv()
+        print(f"> you logged as {me}")
         while True:
-            print(f"> start")
-            await websocket.send(create_request(PossibleEvents.Ping))
+            events_list = '\n'.join([f"{n + 1} - {i.name}" for n, i in enumerate(list(PossibleEvents))])
+            r = input(f"What to send\n{events_list}\n>")
+            await websocket.send(create_request(list(PossibleEvents)[int(r) - 1]))
             server_sent = await websocket.recv()
             print(f"> Server sent {server_sent}")
-            await asyncio.sleep(1)
+            #await asyncio.sleep(1)
 
 asyncio.get_event_loop().run_until_complete(hello())

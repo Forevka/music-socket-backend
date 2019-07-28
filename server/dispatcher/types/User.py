@@ -1,7 +1,9 @@
 from typing import Any, List, Dict
 from loguru import logger
+import time
 import json
 
+from ..types import WebsocketEvent
 from ..utils import ContextInstanceMixin
 from . import ChannelPool
 
@@ -26,14 +28,24 @@ class User(ContextInstanceMixin):
     def get_channel(self):
         return ChannelPool.get_instance().channel_id(self.on_channel_id)
 
-    def get_info(self):
-        my_channel = self.get_channel()
-        return ResponsePacket(my_channel.song_id, my_channel.current_song_time,
-                                my_channel.id, self.socket)
+    def to_dict(self):
+        return {
+                "user": self.id,
+                "channel": self.on_channel_id,
+        }
 
-    async def answer(self, body):
-        a = await self.websocket.send(json.dumps(body))
-        print(a)
+    def response_dict(self):
+        return {
+                    "event": WebsocketEvent.get_current().event,
+                    "timestamp": time.time(),
+                    "body": {},
+                }
+
+    async def answer(self, body = ''):
+        response = self.response_dict()
+        response.update({"body": body})
+
+        await self.websocket.send(json.dumps(response))
 
     def __str__(self):
         return f"User ID {self.id} on channel {self.on_channel_id}"

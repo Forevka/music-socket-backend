@@ -22,6 +22,9 @@ class ChannelPool:
         for i in self.channel_dict.values():
             logger.info(i)
 
+    def to_dict(self):
+        return [i.to_dict() for i in self.channel_dict.values()]
+
     @staticmethod
     def get_instance():
         if ChannelPool.instance == None:
