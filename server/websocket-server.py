@@ -1,38 +1,46 @@
-#!/usr/bin/env python
-
-# WS server that sends messages at random intervals
-
 import asyncio
 import datetime
 import random
+import json
 import websockets
+import time
+from uuid import uuid4
+from typing import Any, List, Dict
+from loguru import logger
 
-USERS = set()
+from dispatcher import Dispatcher, Websocket
+from dispatcher.filters.builtin import EventTypeFilter
+from dispatcher.types import WebsocketEvent
+from dispatcher.types import Channel, ChannelPool, User, UserPool
 
-async def register(websocket):
-    USERS.add(websocket)
-    print("new user "+str(websocket))
 
+s = Websocket()
+dp = Dispatcher(s)
+Dispatcher.set_current(dp)
 
-async def unregister(websocket):
-    USERS.remove(websocket)
-    print("left user "+str(websocket))
+@dp.event_handler(EventTypeFilter('Ping'))
+async def echo(event: WebsocketEvent, data):
+    await event.answer()
+    return True
 
-async def time(websocket, path):
-    await register(websocket)
-    try:
-        while True:
-            now = datetime.datetime.utcnow().isoformat() + "Z"
-            sleep_for = 1
-            await websocket.send(now)
-            print("Sended time to user " + str(websocket) + " and sleep for " + str(sleep_for) + "seconds")
-            await asyncio.sleep(sleep_for)
-    except websockets.exceptions.ConnectionClosedError:
-        print("user disconected")
-    finally:
-        await unregister(websocket)
+@dp.event_handler(EventTypeFilter('GetInfo'))
+async def echo(event: WebsocketEvent, data):
+    await event.answer(event.user().to_dict())
+    return True
 
-start_server = websockets.serve(time, "127.0.0.1", 5678)
+@dp.event_handler(EventTypeFilter('GetChannels'))
+async def echo(event: WebsocketEvent, data):
+    await event.answer(ChannelPool.get_instance().to_dict())
+    return True
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+@dp.event_handler()
+async def echo(event: WebsocketEvent, data):
+    await event.answer('idk what you whant')
+    return True
+
+if __name__ == "__main__":
+    s.ch_pool.add_channel(name = 'Default Channel')
+    s.ch_pool.channel_list()
+
+    asyncio.get_event_loop().run_until_complete(s.start_server("127.0.0.1", 5678))
+    asyncio.get_event_loop().run_forever()
