@@ -13,6 +13,7 @@ class PossibleEvents(Enum):
     GetInfo = auto()
     GetChannels = auto()
     GetUnknown = auto()
+    Login = auto()
 
 def create_request(event, body = '1'):
     return json.dumps({"event": event.name, "body": body, "timestamp": time.time()})
@@ -21,6 +22,7 @@ async def hello():
     uri = "ws://localhost:5678"
     my_channel = {}
     async with websockets.connect(uri) as websocket:
+        await websocket.send(create_request(PossibleEvents.Login, {"username": "admin", "password": "ads"}))
         print(f"> waiting for info from server")
         me = await websocket.recv()
         print(f"> you logged as {me}")

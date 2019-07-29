@@ -15,6 +15,7 @@ class User(ContextInstanceMixin):
     def __init__(self, id, websocket, on_channel_id = 0):
         self.id = id
         self.websocket = websocket
+        self.role = None
         self.move_to_channel(on_channel_id)
 
     def move_to_channel(self, channel_id):
@@ -32,7 +33,14 @@ class User(ContextInstanceMixin):
         return {
                 "user": self.id,
                 "channel": self.on_channel_id,
+                "role": self.role
         }
+
+    def set_role(self, role):
+        self.role = role.name
+
+    def get_role(self):
+        return self.role
 
     def response_dict(self):
         return {

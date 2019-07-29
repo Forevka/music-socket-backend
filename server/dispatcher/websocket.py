@@ -25,12 +25,12 @@ class Websocket:
     async def register(self, websocket):
         user = UserPool.get_instance().add_user(websocket)
         logger.info(f"new user {user}")
-        await websocket.send(json.dumps(
-                                {"event": "Logged",
-                                    "timestamp": time.time(),
-                                    "body": user.to_dict()
-                                })
-                            )
+        #await websocket.send(json.dumps(
+        #                        {"event": "Logged",
+        #                            "timestamp": time.time(),
+        #                            "body": user.to_dict()
+        #                        })
+        #                    )
         return user
 
 

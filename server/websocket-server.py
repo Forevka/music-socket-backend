@@ -11,12 +11,23 @@ from loguru import logger
 from dispatcher import Dispatcher, Websocket
 from dispatcher.filters.builtin import EventTypeFilter
 from dispatcher.types import WebsocketEvent
-from dispatcher.types import Channel, ChannelPool, User, UserPool
+from dispatcher.types import Channel, ChannelPool, User, UserPool, Roles
 
 
 s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
+
+
+@dp.event_handler(EventTypeFilter('Login'))
+async def echo(event: WebsocketEvent, data):
+    if event.body['username'] == "admin" and event.body['password'] == "admin":
+        event.user().set_role(Roles.Admin)
+        await event.answer({"status": "ok"})
+        return True
+    event.user().set_role(Roles.Guest)
+    await event.answer({"status": "bad"})
+
 
 @dp.event_handler(EventTypeFilter('Ping'))
 async def echo(event: WebsocketEvent, data):
@@ -37,6 +48,9 @@ async def echo(event: WebsocketEvent, data):
 async def echo(event: WebsocketEvent, data):
     await event.answer('idk what you whant')
     return True
+
+
+
 
 if __name__ == "__main__":
     s.ch_pool.add_channel(name = 'Default Channel')
