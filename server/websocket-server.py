@@ -44,7 +44,7 @@ async def echo(event: WebsocketEvent, data):
     return True
 
 @dp.move_to_channel_handler()
-async def echo(event: WebsocketEvent, data
+async def echo(event: WebsocketEvent, data):
     User.get_current().move_to_channel(int(event.body))
     logger.info(User.get_current().get_channel().id)
 
