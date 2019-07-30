@@ -46,15 +46,14 @@ async def echo(event: WebsocketEvent, data):
 
 @dp.move_to_channel_handler()
 async def echo(event: WebsocketEvent, data):
-    k = event.body
-    User.move_to_channel(int(k))
-    logger.info(User.get_channel())
+    User.get_current().move_to_channel(int(event.body))
+    logger.info(User.get_current().get_channel().id)
 
 
 
 
 
-@dp.event_handler()
+@dp.unhandled_event()
 async def echo(event: WebsocketEvent, data):
     await event.answer('idk what you whant')
     return True

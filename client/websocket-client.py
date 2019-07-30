@@ -11,8 +11,8 @@ class AutoName(Enum):
 
 class PossibleEvents(Enum):
     Ping = auto()
-    GetInfo = auto()
-    GetChannels = auto()
+    Get_info = auto()
+    Get_channels = auto()
     GetUnknown = auto()
     Login = auto()
     Move_to_channel = auto()

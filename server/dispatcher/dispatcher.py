@@ -21,7 +21,7 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         self.ping_handler = Event()
         self.get_channel_handler = Event()
         self.move_to_channel_handler = Event()
-        self.event_handler = Event()
+        self.unhandled_event = Event()
         '''
         self.url_messages_handler = Event()  # URLMessage
         self.location_messages_handler = Event()  # LocationMessage
@@ -61,16 +61,16 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         if request.event == "Login":
             result = await self.login_handler.notify(request, data)
             logger.info("Da Robe")
-        elif request.event == "GetInfo":
+        elif request.event == "Get_info":
             result = await self.get_info_handler.notify(request, data)
         elif request.event == "Ping":
             result = await self.ping_handler.notify(request, data)
-        elif request.event == "GetChannel":
+        elif request.event == "Get_channels":
             result = await self.get_channel_handler.notify(request, data)
         elif request.event == "Move_to_channel":
             result = await self.move_to_channel_handler.notify(request, data)
         elif request:
-            result = await self.event_handler.notify(request, data)
+            result = await self.unhandled_event.notify(request, data)
         else:
             raise SkipHandler()
         if result:
