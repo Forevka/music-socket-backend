@@ -35,7 +35,7 @@ async def hello():
             events_list = '\n'.join([f"{n + 1} - {i.name}" for n, i in enumerate(list(PossibleEvents))])
             r = input(f"What to send\n{events_list}\n>")
             if r == 6:
-                l = input("Please read channel")
+                l = input("Please input channel id")
                 await websocket.send(create_request(list(PossibleEvents)[int(r) - 1], int(l)))
             await websocket.send(create_request(list(PossibleEvents)[int(r) - 1]))
             server_sent = await websocket.recv()
