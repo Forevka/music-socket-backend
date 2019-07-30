@@ -25,12 +25,6 @@ class Websocket:
     async def register(self, websocket):
         user = UserPool.get_instance().add_user(websocket)
         logger.info(f"new user {user}")
-        #await websocket.send(json.dumps(
-        #                        {"event": "Logged",
-        #                            "timestamp": time.time(),
-        #                            "body": user.to_dict()
-        #                        })
-        #                    )
         return user
 
 
@@ -46,23 +40,19 @@ class Websocket:
                 request = await websocket.recv()
                 data = {}
 
-                User.set_current(UserPool.get_instance().get_user_by_socket(websocket))
-                Channel.set_current(User.get_current().get_channel())
+                User.set_current(user)
+                Channel.set_current(user.get_channel())
 
                 logger.debug(f"current user {User.get_current()}")
                 logger.debug(f"current channel {Channel.get_current()}")
 
                 try:
                     data = json.loads(request)
-                except:
-                    websocket.send(json.loads({"status": "can`t parse your payload"}))
-                    continue
-
-                try:
                     request_object = self.dispatcher.parse_request(data)
                     WebsocketEvent.set_current(request_object)
                 except TypeError as e:
                     logger.exception(f"Failed to parse input message: {data} with error: {e}")
+                    continue
                 else:
                     #notify all handlers
                     logger.debug(f"Received {request_object}")

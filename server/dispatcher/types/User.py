@@ -3,7 +3,7 @@ from loguru import logger
 import time
 import json
 
-from ..types import WebsocketEvent
+from . import WebsocketEvent
 from ..utils import ContextInstanceMixin
 from . import ChannelPool
 
@@ -13,9 +13,11 @@ class User(ContextInstanceMixin):
     socket: Any
 
     def __init__(self, id, websocket, on_channel_id = 0):
+        from . import Roles
+
         self.id = id
         self.websocket = websocket
-        self.role = None
+        self.role = Roles.Guest
         self.move_to_channel(on_channel_id)
 
     def move_to_channel(self, channel_id):
@@ -33,11 +35,11 @@ class User(ContextInstanceMixin):
         return {
                 "user": self.id,
                 "channel": self.on_channel_id,
-                "role": self.role
+                "role": self.role.name
         }
 
     def set_role(self, role):
-        self.role = role.name
+        self.role = role
 
     def get_role(self):
         return self.role
@@ -56,4 +58,4 @@ class User(ContextInstanceMixin):
         await self.websocket.send(json.dumps(response))
 
     def __str__(self):
-        return f"User ID {self.id} on channel {self.on_channel_id}"
+        return str(self.to_dict())
