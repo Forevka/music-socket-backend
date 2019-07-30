@@ -61,13 +61,13 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         if request.event == "Login":
             result = await self.login_handler.notify(request, data)
             logger.info("Da Robe")
-        elif request.event == "Get_info":
+        elif request.event == "GetInfo":
             result = await self.get_info_handler.notify(request, data)
         elif request.event == "Ping":
             result = await self.ping_handler.notify(request, data)
-        elif request.event == "Get_channels":
+        elif request.event == "GetChannels":
             result = await self.get_channel_handler.notify(request, data)
-        elif request.event == "Move_to_channel":
+        elif request.event == "MoveToChannel":
             result = await self.move_to_channel_handler.notify(request, data)
         elif request:
             result = await self.unhandled_event.notify(request, data)

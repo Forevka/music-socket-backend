@@ -11,11 +11,11 @@ class AutoName(Enum):
 
 class PossibleEvents(Enum):
     Ping = auto()
-    Get_info = auto()
-    Get_channels = auto()
+    GetInfo = auto()
+    GetChannels = auto()
     GetUnknown = auto()
     Login = auto()
-    Move_to_channel = auto()
+    MoveToChannel = auto()
 
 
 def create_request(event, body = '1'):
