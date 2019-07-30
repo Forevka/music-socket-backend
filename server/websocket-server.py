@@ -28,7 +28,6 @@ async def echo(event: WebsocketEvent, data):
     event.user().set_role(Roles.Guest)
     await event.answer({"status": "bad"})
 
-
 @dp.ping_handler()
 async def echo(event: WebsocketEvent, data):
     await event.answer()
@@ -45,13 +44,9 @@ async def echo(event: WebsocketEvent, data):
     return True
 
 @dp.move_to_channel_handler()
-async def echo(event: WebsocketEvent, data):
+async def echo(event: WebsocketEvent, data
     User.get_current().move_to_channel(int(event.body))
     logger.info(User.get_current().get_channel().id)
-
-
-
-
 
 @dp.unhandled_event()
 async def echo(event: WebsocketEvent, data):
@@ -59,10 +54,9 @@ async def echo(event: WebsocketEvent, data):
     return True
 
 
-
-
 if __name__ == "__main__":
     s.ch_pool.add_channel(name = 'Default Channel')
+    s.ch_pool.add_channel(name = 'Rock Channel')
     s.ch_pool.channel_list()
 
     asyncio.get_event_loop().run_until_complete(s.start_server("127.0.0.1", 5678))
