@@ -16,6 +16,11 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         self.loop = asyncio.get_event_loop()
 
         self.update_handlers = Event()
+        self.login_handler = Event()
+        self.get_info_handler = Event()
+        self.ping_handler = Event()
+        self.get_channel_handler = Event()
+        self.move_to_channel_handler = Event()
         self.event_handler = Event()
         '''
         self.url_messages_handler = Event()  # URLMessage
@@ -53,7 +58,18 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
 
     async def _process_event(self, request, data: dict):
         logger.debug(f"processing event {request}")
-        if request:
+        if request.event == "Login":
+            result = await self.login_handler.notify(request, data)
+            logger.info("Da Robe")
+        elif request.event == "GetInfo":
+            result = await self.get_info_handler.notify(request, data)
+        elif request.event == "Ping":
+            result = await self.ping_handler.notify(request, data)
+        elif request.event == "GetChannel":
+            result = await self.get_channel_handler.notify(request, data)
+        elif request.event == "Move_to_channel":
+            result = await self.move_to_channel_handler.notify(request, data)
+        elif request:
             result = await self.event_handler.notify(request, data)
         else:
             raise SkipHandler()

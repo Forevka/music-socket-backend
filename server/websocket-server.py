@@ -19,7 +19,7 @@ dp = Dispatcher(s)
 Dispatcher.set_current(dp)
 
 
-@dp.event_handler(EventTypeFilter('Login'))
+@dp.login_handler()
 async def echo(event: WebsocketEvent, data):
     if event.body['username'] == "admin" and event.body['password'] == "admin":
         event.user().set_role(Roles.Admin)
@@ -29,20 +29,30 @@ async def echo(event: WebsocketEvent, data):
     await event.answer({"status": "bad"})
 
 
-@dp.event_handler(EventTypeFilter('Ping'))
+@dp.ping_handler()
 async def echo(event: WebsocketEvent, data):
     await event.answer()
     return True
 
-@dp.event_handler(EventTypeFilter('GetInfo'))
+@dp.get_info_handler()
 async def echo(event: WebsocketEvent, data):
     await event.answer(event.user().to_dict())
     return True
 
-@dp.event_handler(EventTypeFilter('GetChannels'))
+@dp.get_channel_handler()
 async def echo(event: WebsocketEvent, data):
     await event.answer(ChannelPool.get_instance().to_dict())
     return True
+
+@dp.move_to_channel_handler()
+async def echo(event: WebsocketEvent, data):
+    k = event.body
+    User.move_to_channel(int(k))
+    logger.info(User.get_channel())
+
+
+
+
 
 @dp.event_handler()
 async def echo(event: WebsocketEvent, data):
