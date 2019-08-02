@@ -27,7 +27,6 @@ async def hello():
     my_channel = {}
     async with websockets.connect(uri) as websocket:
         await websocket.send(create_request(PossibleEvents.Login, {"username": "admin", "password": "admid"}))
-        await websocket.send(create_request(PossibleEvents.GetChannels))
         print(f"> waiting for info from server")
         me = await websocket.recv()
         print(f"> you logged as {me}")
@@ -37,6 +36,7 @@ async def hello():
             if r == 6:
                 l = input("Please input channel id")
                 logger.info(l)
+                await websocket.send(create_request(PossibleEvents.GetChannels))
                 await websocket.send(create_request(PossibleEvents.MoveToChannel, int(l)))
             else:
                 await websocket.send(create_request(list(PossibleEvents)[int(r) - 1]))
