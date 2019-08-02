@@ -15,11 +15,13 @@ class DBWorker:
 
 
     def add_new_user(self, login, password):
-        self.cursor.execute('''INSERT INTO "users_info" (login, password)
-                        VALUES ('{}', '{}')'''.format(login, password))
-        self.conn.commit()
-        logger.info("successfully added")
-        return self.return_id(login)
+        if not self.check_availability_login(login):
+            self.cursor.execute('''INSERT INTO "users_info" (login, password)
+                            VALUES ('{}', '{}')'''.format(login, password))
+            self.conn.commit()
+            logger.info("successfully added")
+            return self.cursor.lastrowid
+        return False
 
 
 
@@ -53,4 +55,4 @@ class DBWorker:
 
 if __name__ == "__main__":
     l = DBWorker()
-    logger.info(l.authentication("debik", "123456"))
+    logger.info(l.add_new_user("stiaki", "123456"))
