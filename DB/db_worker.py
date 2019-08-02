@@ -19,6 +19,7 @@ class DBWorker:
                         VALUES ('{}', '{}')'''.format(login, password))
         self.conn.commit()
         logger.info("successfully added")
+        return self.return_id(login)
 
 
 
@@ -48,12 +49,6 @@ class DBWorker:
         if k:
             return True
         return False
-
-    def delete_out(self, d):
-        s = self.define(d, "DELETE ")
-        logger.info(s)
-        self.cursor.execute(s)
-        self.conn.commit()
 
 
 if __name__ == "__main__":
