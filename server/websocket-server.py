@@ -45,8 +45,8 @@ async def echo(event: WebsocketEvent, data):
 
 @dp.move_to_channel_handler()
 async def echo(event: WebsocketEvent, data):
-    User.get_current().move_to_channel(int(event.body))
-    logger.info(User.get_current().get_channel().id)
+    res = User.get_current().move_to_channel(int(event.body))
+    await event.answer({"moved": res})
 
 @dp.unhandled_event()
 async def echo(event: WebsocketEvent, data):

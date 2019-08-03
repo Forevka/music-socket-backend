@@ -18,24 +18,28 @@ class User(ContextInstanceMixin):
         self.id = id
         self.websocket = websocket
         self.role = Roles.Guest
+        self.on_channel_id = on_channel_id
         self.move_to_channel(on_channel_id)
 
     def move_to_channel(self, channel_id):
-        old_channel = ChannelPool.get_instance().channel_id(channel_id)
-        if old_channel:
-            old_channel.unregister_user(self)
-        self.on_channel_id = channel_id
         new_channel = ChannelPool.get_instance().channel_id(channel_id)
-        new_channel.register_user(self)
+        if new_channel:
+            old_channel = ChannelPool.get_instance().channel_id(self.on_channel_id)
+            if old_channel:
+                old_channel.unregister_user(self)
+            self.on_channel_id = channel_id
+            new_channel.register_user(self)
+            return True
+        return False
 
     def get_channel(self):
         return ChannelPool.get_instance().channel_id(self.on_channel_id)
 
     def to_dict(self):
         return {
-                "user": self.id,
-                "channel": self.on_channel_id,
-                "role": self.role.name
+            "user": self.id,
+            "channel": self.on_channel_id,
+            "role": self.role.name
         }
 
     def set_role(self, role):
