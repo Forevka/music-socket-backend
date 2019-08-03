@@ -22,11 +22,12 @@ Dispatcher.set_current(dp)
 @dp.login_handler()
 async def echo(event: WebsocketEvent, data):
     if event.body['username'] == "admin" and event.body['password'] == "admin":
+        event.user().set_username(event.body['username'])
         event.user().set_role(Roles.Admin)
-        await event.answer({"status": "ok"})
+        await event.answer(event.user().to_dict())
         return True
     event.user().set_role(Roles.Guest)
-    await event.answer({"status": "bad"})
+    await event.answer(event.user().to_dict())
 
 @dp.ping_handler()
 async def echo(event: WebsocketEvent, data):

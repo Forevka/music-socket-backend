@@ -12,10 +12,11 @@ class User(ContextInstanceMixin):
     on_channel_id: int
     socket: Any
 
-    def __init__(self, id, websocket, on_channel_id = 0):
+    def __init__(self, id, websocket, on_channel_id = 0, username = 'Anonym'):
         from . import Roles
 
         self.id = id
+        self.username = username
         self.websocket = websocket
         self.role = Roles.Guest
         self.on_channel_id = on_channel_id
@@ -37,7 +38,8 @@ class User(ContextInstanceMixin):
 
     def to_dict(self):
         return {
-            "user": self.id,
+            "user_id": self.id,
+            "user_name": self.username,
             "channel": self.on_channel_id,
             "role": self.role.name
         }
@@ -47,6 +49,13 @@ class User(ContextInstanceMixin):
 
     def get_role(self):
         return self.role
+
+    def get_username(self):
+        return self.username
+
+    def set_username(self, username):
+        self.username = username
+        return True
 
     def response_dict(self):
         return {
