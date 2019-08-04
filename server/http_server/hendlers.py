@@ -6,19 +6,27 @@ class Hendlers:
     def __init__(self):
         self.db = DBWorker()
 
-    async def hendler_get(self, request):
+    async def hendler_add_new_user(self, request):
         data = await request.json()
-        logger.info(data)
         logger.info(data['data'])
-        if data['action'] == "add_new_user":
-            res = self.db.add_new_user(data['data']['login'], data['data']['password'])
-        elif data['action'] == "check_availability_login":
-            res = self.db.check_availability_login(data['data']['login'])
-        elif data['action'] == "return_id":
-            res = self.db.return_id(data['data']['login'])
-        elif data['action'] == "authentication":
-            res = self.db.authentication(data['data']['login'], data['data']['password'])
-        else:
-            logger.error("unknown action")
+        res = self.db.add_new_user(data['data']['login'], data['data']['password'])
         logger.info(str(res))
+        return web.Response(text=str(res))
+
+    async def hendler_return_id(self, request):
+        data = await request.json()
+        logger.info(data['data'])
+        res = self.db.return_id(data['data']['login'])
+        return web.Response(text=str(res))
+
+    async def hendler_check_availability_login(self, request):
+        data = await request.json()
+        logger.info(data['data'])
+        res = self.db.check_availability_login(data['data']['login'])
+        return web.Response(text=str(res))
+
+    async def hendler_authentication(self, request):
+        data = await request.json()
+        logger.info(data['data'])
+        res = self.db.authentication(data['data']['login'], data['data']['password'])
         return web.Response(text=str(res))
