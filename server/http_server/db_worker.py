@@ -51,8 +51,3 @@ class DBWorker:
         if k:
             return True
         return False
-
-
-if __name__ == "__main__":
-    l = DBWorker()
-    logger.info(l.add_new_user("stiaki", "123456"))
