@@ -4,7 +4,6 @@ from loguru import logger
 from hendlers import Hendlers
 import jwt
 
-def decode(token):
 
 
 def encryption(login, password):
