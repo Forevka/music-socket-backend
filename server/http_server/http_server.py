@@ -16,7 +16,7 @@ def encryption(login, password):
 async def create_token(request, handler):
     if handler(request):
         response = encryption(data['data']['login'], data['data']['password'])
-        return web.json_response({'status': "unautheticated user", 'token': response})
+        return web.json_response({'status': "ok", 'token': response})
     return web.json_response({'status': "unautheticated user"})
 
 
