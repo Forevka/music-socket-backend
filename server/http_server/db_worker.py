@@ -25,12 +25,12 @@ class DBWorker:
 
 
 
-    def return_id(self, login):
+    def get_user(self, login):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
         self.conn.commit()
         k = self.cursor.fetchall()
         if k:
-            return k[0][0]
+            return k
         return False
 
     def authentication(self, login, password):
