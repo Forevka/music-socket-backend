@@ -15,7 +15,7 @@ class DBWorker:
 
 
     def add_new_user(self, login, password):
-        if not self.check_availability_login(login):
+        if not self.return_id(login):
             self.cursor.execute('''INSERT INTO "users_info" (login, password)
                             VALUES ('{}', '{}')'''.format(login, password))
             self.conn.commit()
@@ -24,16 +24,6 @@ class DBWorker:
         return False
 
 
-
-
-    def check_availability_login(self, login):
-        self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
-        self.conn.commit()
-        k = self.cursor.fetchall()
-        logger.info(k)
-        if k:
-            return True
-        return False
 
     def return_id(self, login):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
@@ -49,5 +39,5 @@ class DBWorker:
         k = self.cursor.fetchall()
         logger.info(k)
         if k:
-            return True
+            return k[0][0]
         return False
