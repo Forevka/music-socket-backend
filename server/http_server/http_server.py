@@ -14,6 +14,7 @@ def encryption(login, password):
 
 @web.middleware
 async def create_token(request, handler):
+    data = await request.json()
     if handler(request):
         response = encryption(data['data']['login'], data['data']['password'])
         return web.json_response({'status': "ok", 'token': response})
