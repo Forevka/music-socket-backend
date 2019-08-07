@@ -12,16 +12,15 @@ def decode(token):
 @web.middleware
 async def check_token(request, handler):
     token = request.headers.get("token")
-#    try:
-#        logger.info("###############################")
-    logger.info(token)
-    decoded = decode(token)
-    logger.info(decoded)
-    return await handler(decoded)
-#    except:
-#        logger.debug("invalid token - {}".format(token))
-#    finally:
-#        return web.json_response({'status': "unautheticated user"})
+    try:
+        logger.info("###############################")
+        decoded = decode(token)
+        logger.info(decoded)
+        return await handler(decoded, request)
+    except:
+        logger.debug("invalid token - {}".format(token))
+    finally:
+        return web.json_response({'status': "unautheticated user"})
 
 
 if __name__ == '__main__':

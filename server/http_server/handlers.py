@@ -25,7 +25,7 @@ class Handlers:
             return web.json_response({'status': "ok", 'token': str(response)})
         return web.json_response({'status': "not_ok"})
 
-    async def hendler_get_user(self, d):
+    async def hendler_get_user(self, d, request):
         logger.info(d)
         res = self.db.get_user(d['login'])
         if res:
