@@ -1,27 +1,32 @@
 import asyncio
 from aiohttp import web
 from loguru import logger
-from hendlers import Hendlers
+from handlers import Handlers
 import jwt
 
 
-
-def encryption(login, password):
-    encoded = jwt.encode({'login': login, 'password': password}, 'onal', algorithm='HS256')
-    logger.info(encoded)
-    return encoded
+def decode(token):
+    logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    return jwt.decode(token, 'onal', algorithms=['HS256'])
 
 @web.middleware
 async def check_token(request, handler):
     token = request.headers.get("token")
-    if token:
-        return await handler(token)
-    return web.json_response({'status': "unautheticated user"})
+#    try:
+#        logger.info("###############################")
+    logger.info(token)
+    decoded = decode(token)
+    logger.info(decoded)
+    return await handler(decoded)
+#    except:
+#        logger.debug("invalid token - {}".format(token))
+#    finally:
+#        return web.json_response({'status': "unautheticated user"})
 
 
 if __name__ == '__main__':
     app = web.Application()
-    hndl = Hendlers()
+    hndl = Handlers()
     app2 = web.Application(middlewares=[check_token])
     app.router.add_route('GET',  '/add_new_user', hndl.hendler_add_new_user)
     app2.router.add_route('GET',  '/get_user', hndl.hendler_get_user)

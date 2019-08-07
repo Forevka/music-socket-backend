@@ -4,7 +4,7 @@ from db_worker import DBWorker
 import json
 import jwt
 
-class Hendlers:
+class Handlers:
     def __init__(self):
         self.db = DBWorker()
 
@@ -14,9 +14,7 @@ class Hendlers:
         logger.info(encoded)
         return encoded
 
-    def decode(self, token):
-        logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        return jwt.decode(token, 'onal', algorithms=['HS256'])
+
 
     async def hendler_add_new_user(self, request):
         data = await request.json()
@@ -27,13 +25,11 @@ class Hendlers:
             return web.json_response({'status': "ok", 'token': str(response)})
         return web.json_response({'status': "not_ok"})
 
-    async def hendler_get_user(self, token):
-        logger.info(token)
-        d = self.decode(token)
+    async def hendler_get_user(self, d):
         logger.info(d)
         res = self.db.get_user(d['login'])
         if res:
-            return {'status': 'ok', 'user': res}
+            return web.json_response({'status': 'ok', 'user': res})
         return False
 
     async def hendler_authentication(self, request):
@@ -42,6 +38,6 @@ class Hendlers:
         res = self.db.authentication(data['data']['login'], data['data']['password'])
         logger.info(res)
         if res:
-            response = encryption(data['data']['login'], data['data']['password'], res[2])
+            response = self.encryption(data['data']['login'], data['data']['password'], res[2])
             return web.json_response({'status': "ok", 'token': str(response)})
         return False
