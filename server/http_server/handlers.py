@@ -39,5 +39,6 @@ class Handlers:
         logger.info(res)
         if res:
             response = self.encryption(data['data']['login'], data['data']['password'], res[2])
-            return web.json_response({'status': "ok", 'token': str(response)})
+            token = response.decode("utf-8")
+            return web.json_response({'status': "ok", 'token': token})
         return False
