@@ -28,6 +28,7 @@ class Handlers:
     async def hendler_get_user(self, d, request):
         logger.info(d)
         res = self.db.get_user(d['login'])
+        logger.debug(res)
         if res:
             return web.json_response({'status': 'ok', 'user': res})
         return False

@@ -19,8 +19,8 @@ async def check_token(request, handler):
         return await handler(decoded, request)
     except:
         logger.debug("invalid token - {}".format(token))
-    finally:
         return web.json_response({'status': "unautheticated user"})
+
 
 
 if __name__ == '__main__':
