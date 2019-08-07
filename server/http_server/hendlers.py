@@ -9,7 +9,13 @@ class Hendlers:
         self.db = DBWorker()
 
 
-    def decode(token):
+    def encryption(self, login, password, role):
+        encoded = jwt.encode({'login': login, 'password': password, 'role': role}, 'onal', algorithm='HS256')
+        logger.info(encoded)
+        return encoded
+
+    def decode(self, token):
+        logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         return jwt.decode(token, 'onal', algorithms=['HS256'])
 
     async def hendler_add_new_user(self, request):
@@ -17,13 +23,13 @@ class Hendlers:
         logger.info(data['data'])
         res = self.db.add_new_user(data['data']['login'], data['data']['password'])
         if res:
-            return res
-        return False
+            response = encryption(data['data']['login'], data['data']['password'], "guest")
+            return web.json_response({'status': "ok", 'token': str(response)})
+        return web.json_response({'status': "not_ok"})
 
-    async def hendler_get_user(self, request):
-        token = request.headers.get("token")
+    async def hendler_get_user(self, token):
         logger.info(token)
-        d = decode(token)
+        d = self.decode(token)
         logger.info(d)
         res = self.db.get_user(d['login'])
         if res:
@@ -34,6 +40,8 @@ class Hendlers:
         data = await request.json()
         logger.info(data['data'])
         res = self.db.authentication(data['data']['login'], data['data']['password'])
+        logger.info(res)
         if res:
-            return res
+            response = encryption(data['data']['login'], data['data']['password'], res[2])
+            return web.json_response({'status': "ok", 'token': str(response)})
         return False

@@ -15,19 +15,17 @@ class DBWorker:
 
 
     def add_new_user(self, login, password):
-        if not self.return_id(login):
-            self.cursor.execute('''INSERT INTO "users_info" (login, password)
-                            VALUES ('{}', '{}')'''.format(login, password))
-            self.conn.commit()
-            logger.info("successfully added")
+        self.cursor.execute('''INSERT INTO "users_info" (login, password, role)
+                        VALUES ('{}', '{}', '{}') ON CONFLICT DO NOTHING'''.format(login, password, "guest"))
+        self.conn.commit()
+        logger.info(self.cursor.lastrowid)
+        if self.cursor.lastrowid:
             return self.cursor.lastrowid
         return False
 
 
-
     def get_user(self, login):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
-        self.conn.commit()
         k = self.cursor.fetchall()
         if k:
             return k
@@ -35,9 +33,8 @@ class DBWorker:
 
     def authentication(self, login, password):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' and password = '{}' '''.format(login, password))
-        self.conn.commit()
         k = self.cursor.fetchall()
         logger.info(k)
         if k:
-            return k[0][0]
+            return [k[0][1], k[0][2], k[0][3]]
         return False
