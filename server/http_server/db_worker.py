@@ -33,8 +33,8 @@ class DBWorker:
 
     def authentication(self, login, password):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' and password = '{}' '''.format(login, password))
-        k = self.cursor.fetchall()
+        k = self.cursor.fetchone()
         logger.info(k)
         if k:
-            return [k[0][1], k[0][2], k[0][3]]
+            return [k[1], k[2], k[3]]
         return False

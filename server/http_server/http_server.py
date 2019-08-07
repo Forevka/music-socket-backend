@@ -15,15 +15,14 @@ def encryption(login, password):
 async def check_token(request, handler):
     token = request.headers.get("token")
     if token:
-        response = encryption(data['data']['login'], data['data']['password'])
-        return web.json_response({'status': "ok", 'token': str(response)})
+        return await handler(token)
     return web.json_response({'status': "unautheticated user"})
 
 
 if __name__ == '__main__':
-    app = web.Application(middlewares=[create_token])
+    app = web.Application()
     hndl = Hendlers()
-    app2 = web.Application()
+    app2 = web.Application(middlewares=[check_token])
     app.router.add_route('GET',  '/add_new_user', hndl.hendler_add_new_user)
     app2.router.add_route('GET',  '/get_user', hndl.hendler_get_user)
     app.router.add_route('GET',  '/authentication', hndl.hendler_authentication)
