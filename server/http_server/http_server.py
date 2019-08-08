@@ -11,13 +11,13 @@ def decode(token):
 @web.middleware
 async def check_token(request, handler):
     token = request.headers.get("token")
-    #try:
-    decoded = decode(token)
-    logger.info(decoded)
-    return await handler(decoded, request)
-    #except:
-    #    logger.debug("invalid token - {}".format(token))
-    #    return web.json_response({'status': "unautheticated user"})
+    try:
+        decoded = decode(token)
+        logger.info(decoded)
+        return await handler(decoded, request)
+    except:
+        logger.debug("invalid token - {}".format(token))
+        return web.json_response({'status': "unautheticated user"})
 
 
 
