@@ -6,20 +6,18 @@ import jwt
 
 
 def decode(token):
-    logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     return jwt.decode(token, 'onal', algorithms=['HS256'])
 
 @web.middleware
 async def check_token(request, handler):
     token = request.headers.get("token")
-    try:
-        logger.info("###############################")
-        decoded = decode(token)
-        logger.info(decoded)
-        return await handler(decoded, request)
-    except:
-        logger.debug("invalid token - {}".format(token))
-        return web.json_response({'status': "unautheticated user"})
+    #try:
+    decoded = decode(token)
+    logger.info(decoded)
+    return await handler(decoded, request)
+    #except:
+    #    logger.debug("invalid token - {}".format(token))
+    #    return web.json_response({'status': "unautheticated user"})
 
 
 

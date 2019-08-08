@@ -26,9 +26,9 @@ class DBWorker:
 
     def get_user(self, login):
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
-        k = self.cursor.fetchall()
+        k = self.cursor.fetchone()
         if k:
-            return k
+            return [k[0], k[1], k[3]]
         return False
 
     def authentication(self, login, password):
