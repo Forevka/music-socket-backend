@@ -41,3 +41,12 @@ class DBWorker:
         if k:
             return {"id": k[0], "login": k[1], "role": k[3], "img_url": k[4]}
         return False
+
+
+
+    def get_channel(self, id):
+        self.cursor.execute('''SELECT * FROM "channels" WHERE id = {} '''.format(id))
+        k = self.cursor.fetchone()
+        if k:
+            return {"id": k[0], "name": k[1], "description": k[2], "img_url": k[4]}
+        return False
