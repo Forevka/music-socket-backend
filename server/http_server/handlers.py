@@ -24,7 +24,7 @@ class Handlers:
             response = self.encryption(res)
             token = response.decode("utf-8")
             return web.json_response({'status': "ok", 'token': token})
-        return web.json_response({'status': "not_ok"})
+        return web.StreamResponse(status=401, reason=None)
 
     async def hendler_get_user(self, d, request):
         data = await request.json()
@@ -33,7 +33,7 @@ class Handlers:
         logger.info(res)
         if res:
             return web.json_response({'status': 'ok', 'user': res})
-        return False
+        return web.StreamResponse(status=401, reason=None)
 
     async def hendler_authentication(self, request):
         data = await request.json()
@@ -45,4 +45,4 @@ class Handlers:
             logger.info(res)
             token = response.decode("utf-8")
             return web.json_response({'status': "ok", 'token': token})
-        return False
+        return web.StreamResponse(status=401, reason=None)

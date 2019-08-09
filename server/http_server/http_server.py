@@ -17,7 +17,7 @@ async def check_token(request, handler):
         return await handler(decoded, request)
     except:
         logger.debug("invalid token - {}".format(token))
-        return web.json_response({'status': "invalid token"})
+        return web.StreamResponse(status=401, reason=None)
 
 
 
