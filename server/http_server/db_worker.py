@@ -1,5 +1,6 @@
 import sqlite3
 from loguru import logger
+import settings
 
 class DBWorker:
     def __init__(self):
@@ -15,12 +16,14 @@ class DBWorker:
 
 
     def add_new_user(self, login, password):
-        self.cursor.execute('''INSERT INTO "users_info" (login, password, role)
-                        VALUES ('{}', '{}', '{}') ON CONFLICT DO NOTHING'''.format(login, password, "guest"))
+        img_url = settings.image_url.format(login)
+        logger.info(img_url)
+        self.cursor.execute('''INSERT OR IGNORE INTO "users_info" (login, password, role, image)
+                        VALUES ('{}', '{}', {}, '{}')'''.format(login, password, 1, img_url))
         self.conn.commit()
         logger.info(self.cursor.lastrowid)
         if self.cursor.lastrowid:
-            return self.cursor.lastrowid
+            return {"id": self.cursor.lastrowid, "login": login, "role": 1, "img_url": img_url}
         return False
 
 
@@ -28,7 +31,7 @@ class DBWorker:
         self.cursor.execute('''SELECT * FROM "users_info" WHERE login = '{}' '''.format(login))
         k = self.cursor.fetchone()
         if k:
-            return [k[0], k[1], k[3]]
+            return {"id": k[0], "login": k[1], "role": k[3], "img_url": k[4]}
         return False
 
     def authentication(self, login, password):
@@ -36,5 +39,5 @@ class DBWorker:
         k = self.cursor.fetchone()
         logger.info(k)
         if k:
-            return [k[1], k[2], k[3]]
+            return {"id": k[0], "login": k[1], "role": k[3], "img_url": k[4]}
         return False
