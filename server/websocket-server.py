@@ -18,7 +18,6 @@ s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
 
-
 @dp.login_handler()
 async def echo(event: WebsocketEvent, data):
     if event.body['username'] == "admin" and event.body['password'] == "admin":
@@ -28,6 +27,10 @@ async def echo(event: WebsocketEvent, data):
         return True
     event.user().set_role(Roles.Guest)
     await event.answer(event.user().to_dict())
+
+@dp.chat_message_handler()
+async def echo(event: WebsocketEvent, data):
+    print(event)
 
 @dp.ping_handler()
 async def echo(event: WebsocketEvent, data):

@@ -21,6 +21,7 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         self.ping_handler = Event()
         self.get_channel_handler = Event()
         self.move_to_channel_handler = Event()
+        self.chat_message_handler = Event()
         self.unhandled_event = Event()
         '''
         self.url_messages_handler = Event()  # URLMessage
@@ -69,6 +70,8 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
             result = await self.get_channel_handler.notify(request, data)
         elif request.event == "MoveToChannel":
             result = await self.move_to_channel_handler.notify(request, data)
+        elif request.event == "ChatMessage":
+            result = await self.chat_message_handler.notify(request, data)
         elif request:
             result = await self.unhandled_event.notify(request, data)
         else:
