@@ -43,10 +43,22 @@ class DBWorker:
         return False
 
 
+    def get_fullchannels(self):
+        self.cursor.execute('''SELECT * FROM "channels" ''')
+        k = self.cursor.fetchall()
+        l = list()
+        logger.info(k)
+        for i in k:
+            l.append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
+        logger.info(l)
+        if k:
+            return l
+        return False
+
 
     def get_channel(self, id):
         self.cursor.execute('''SELECT * FROM "channels" WHERE id = {} '''.format(id))
         k = self.cursor.fetchone()
         if k:
-            return {"id": k[0], "name": k[1], "description": k[2], "img_url": k[4]}
+            return {"id": k[0], "name": k[1], "description": k[2], "img_url": k[3]}
         return False

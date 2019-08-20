@@ -45,6 +45,8 @@ if __name__ == '__main__':
 
     register_route(app, '/add_new_user', 'POST', hndl.hendler_add_new_user)
     register_route(app, '/authentication', 'POST', hndl.hendler_authentication)
+    register_route(app, '/get_channel', 'POST', hndl.hendler_get_channel)
+    register_route(app, '/get_fullchannels', 'POST', hndl.hendler_get_fullchannels)
 
     register_route(app2, '/get_user', 'POST', hndl.hendler_get_user)
     app.add_subapp('/methods/', app2)
