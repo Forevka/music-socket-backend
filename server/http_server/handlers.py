@@ -35,8 +35,19 @@ class Handlers:
             return web.json_response(res)
         return web.json_response({'message': 'Can`t find this user'}, status=406)
 
+    async def hendler_get_me(self, request):
+        from http_server import decode
+        logger.info(request.headers)
+        token = request.headers.get('token')
+        decoded = decode(token)
+        logger.info(decoded)
+
+        return web.json_response(decoded)
+
+
     async def hendler_authentication(self, request):
-        data = await request.json()
+        #logger.info(await request.content.read())
+        data = json.loads(await request.content.read())
         logger.info(data)
         res = self.db.authentication(data['login'], data['password'])
         logger.info(res)
@@ -45,7 +56,7 @@ class Handlers:
             logger.info(res)
             token = response.decode("utf-8")
             res['token'] = token
-            return web.json_response(res)
+            return web.json_response(res, headers = {'Access-Control-Allow-Origin': '*'})
         return web.json_response({'message': 'Login or password incorect'}, status=406)
 
     async def hendler_get_channel(self, request):
@@ -58,7 +69,7 @@ class Handlers:
         return web.StreamResponse(status=401, reason=None)
 
 
-    async def hendler_get_fullchannel(self, request):
+    async def hendler_get_fullchannels(self, request):
         res = self.db.get_get_fullchannels()
         logger.info(res)
         if res:
