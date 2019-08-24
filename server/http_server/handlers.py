@@ -24,16 +24,16 @@ class Handlers:
             response = self.encryption(res)
             token = response.decode("utf-8")
             return web.json_response({'status': "ok", 'token': token})
-        return web.StreamResponse(status=401, reason=None)
+        return web.json_response({'message': '???'}, status=406)
 
-    async def hendler_get_user(self, d, request):
+    async def hendler_get_user(self, request):
         data = await request.json()
         logger.info(data['login'])
         res = self.db.get_user(data['login'])
         logger.info(res)
         if res:
-            return web.json_response({'status': 'ok', 'user': res})
-        return web.StreamResponse(status=401, reason=None)
+            return web.json_response(res)
+        return web.json_response({'message': 'Can`t find this user'}, status=406)
 
     async def hendler_authentication(self, request):
         data = await request.json()
@@ -44,5 +44,6 @@ class Handlers:
             response = self.encryption(res)
             logger.info(res)
             token = response.decode("utf-8")
-            return web.json_response({'status': "ok", 'token': token})
-        return web.StreamResponse(status=401, reason=None)
+            res['token'] = token
+            return web.json_response(res)
+        return web.json_response({'message': 'Login or password incorect'}, status=406)

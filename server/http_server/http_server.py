@@ -15,12 +15,10 @@ async def check_token(request, handler):
     try:
         decoded = decode(token)
         logger.info(decoded)
-        return await handler(decoded, request)
-    except:
-        logger.debug("invalid token - {}".format(token))
-        return web.StreamResponse(status=401, reason=None, headers = {'Access-Control-Allow-Origin': "*",
-                    'test': '123',
-                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'})
+        return await handler(request)
+    except Exception as e:
+        logger.debug("invalid token - {} error {}".format(token, e))
+        web.json_response({'message': 'need authenticate first'}, status=401)
 
 
 def register_route(app, path, method, handler):
