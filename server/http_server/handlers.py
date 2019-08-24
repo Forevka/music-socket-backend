@@ -47,3 +47,20 @@ class Handlers:
             res['token'] = token
             return web.json_response(res)
         return web.json_response({'message': 'Login or password incorect'}, status=406)
+
+    async def hendler_get_channel(self, request):
+        data = await request.json()
+        logger.info(data['id'])
+        res = self.db.get_channel(data['id'])
+        logger.info(res)
+        if res:
+            return web.json_response({'status': 'ok', 'channel': res})
+        return web.StreamResponse(status=401, reason=None)
+
+
+    async def hendler_get_fullchannel(self, request):
+        res = self.db.get_get_fullchannels()
+        logger.info(res)
+        if res:
+            return web.json_response({'status': 'ok', 'channels': res})
+        return web.StreamResponse(status=401, reason=None)
