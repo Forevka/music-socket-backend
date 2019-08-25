@@ -13,7 +13,6 @@ from dispatcher.filters.builtin import EventTypeFilter
 from dispatcher.types import WebsocketEvent
 from dispatcher.types import Channel, ChannelPool, User, UserPool, Roles
 
-
 s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
