@@ -1,5 +1,6 @@
 from typing import Any, List, Dict
 from loguru import logger
+from uuid import uuid4
 import random
 
 from ..utils import ContextInstanceMixin
@@ -17,6 +18,12 @@ class Channel(ContextInstanceMixin):
         self.current_song_time = 0
         self.name = name if name is not None else uuid4()
         self.users = []
+
+
+    async def to_all_users(self, body):
+        for user in self.users:
+            await user.answer(body = body)
+
 
     def add_user_id(self, user_id):
         from . import ChannelPool
