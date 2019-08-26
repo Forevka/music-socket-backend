@@ -57,10 +57,10 @@ class DBWorker(metaclass=SingletonMeta):
 
 
     def get_channel_list(self, page = 0, amount = 10):
-        self.cursor.execute(f'SELECT * FROM "channels" LIMIT {amount + 1} OFFSET {page * amount}')
+        self.cursor.execute(f'SELECT * FROM "channels" LIMIT {amount} OFFSET {page * amount}')
         k = self.cursor.fetchall()
         print("k", len(k))
-        d = {"page": page, 'amount': amount, "channels": []}
+        d = {"page": page, 'amount': len(k), "channels": []}
         logger.info(k)
         for i in k:
             d["channels"].append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})

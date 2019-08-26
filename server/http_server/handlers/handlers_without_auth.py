@@ -55,6 +55,17 @@ class HandlersWithoutAuth:
             return web.json_response(res)
         return web.json_response({'message': '???'}, status=406)
 
+    async def get_all_channel_list(self, request):
+        """
+            {}
+        """
+        data = await request.json()
+        res = self.db.get_channel_list(0, 999999)
+        logger.info(res)
+        if res:
+            return web.json_response(res)
+        return web.json_response({'message': '???'}, status=406)
+
     async def get_channels_number(self, request):
         """
             {}
@@ -74,3 +85,4 @@ class HandlersWithoutAuth:
         register_with_cors(app, 'POST', '/get_channel', this_handler.get_channel)
         register_with_cors(app, 'POST', '/get_channels_list', this_handler.get_channel_list)
         register_with_cors(app, 'POST', '/get_channels_number', this_handler.get_channels_number)
+        register_with_cors(app, 'POST', '/get_all_channel_list', this_handler.get_all_channel_list)
