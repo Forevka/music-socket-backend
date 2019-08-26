@@ -8,6 +8,7 @@ from .types import WebsocketEvent
 
 import asyncio
 from loguru import logger
+from http_server.utils import decode
 
 class Dispatcher(DataMixin, ContextInstanceMixin):
     def __init__(self, websocket_controller):
@@ -59,6 +60,12 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
 
     async def _process_event(self, request, data: dict):
         logger.debug(f"processing event {request}")
+        try:
+            decoded = decode(request.token)
+        except Exception as e:
+            logger.debug("invalid token - {} error {}".format(token, e))
+            raise SkipHandler()
+
         if request.event == "Login":
             result = await self.login_handler.notify(request, data)
             logger.info("Da Robe")

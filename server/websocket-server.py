@@ -19,17 +19,18 @@ Dispatcher.set_current(dp)
 
 @dp.login_handler()
 async def echo(event: WebsocketEvent, data):
-    if event.body['username'] == "admin" and event.body['password'] == "admin":
-        event.user().set_username(event.body['username'])
-        event.user().set_role(Roles.Admin)
-        await event.answer(event.user().to_dict())
-        return True
-    event.user().set_role(Roles.Guest)
+    logger.info('login')
+    s.ch_pool.add_channel(int(event.body['channelId']))
+    res = User.get_current().move_to_channel(int(event.body['channelId']))
     await event.answer(event.user().to_dict())
 
 @dp.chat_message_handler()
 async def echo(event: WebsocketEvent, data):
-    print(event)
+    logger.info('chat')
+    logger.info(event)
+    channel = User.get_current().get_channel()
+    logger.info(channel)
+    await channel.to_all_users(event.body)
 
 @dp.ping_handler()
 async def echo(event: WebsocketEvent, data):
@@ -59,8 +60,7 @@ async def echo(event: WebsocketEvent, data):
 
 
 if __name__ == "__main__":
-    s.ch_pool.add_channel(name = 'Default Channel')
-    s.ch_pool.add_channel(name = 'Rock Channel')
+    s.ch_pool.add_channel(-1, name = 'Trash')
     s.ch_pool.channel_list()
 
     asyncio.get_event_loop().run_until_complete(s.start_server("127.0.0.1", 5678))

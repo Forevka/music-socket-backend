@@ -23,6 +23,7 @@ class User(ContextInstanceMixin):
         self.move_to_channel(on_channel_id)
 
     def move_to_channel(self, channel_id):
+        logger.debug(f'moving to channel {channel_id}')
         new_channel = ChannelPool.get_instance().channel_id(channel_id)
         if new_channel:
             old_channel = ChannelPool.get_instance().channel_id(self.on_channel_id)
