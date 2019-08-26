@@ -55,24 +55,24 @@ class DBWorker(metaclass=SingletonMeta):
             return {"id": k[0], "login": k[1], "role": k[3], "img_url": k[4], "email": k[5]}
         return False
 
+    def update_password(self, new_pass, email):
+        logger.info(new_pass)
+        self.cursor.execute('''UPDATE users_info SET password = '{}' WHERE email = '{}' '''.format(new_pass, email))
+        self.conn.commit()
 
-    def get_channel_list(self, page = 0, amount = 10):
-        self.cursor.execute(f'SELECT * FROM "channels" LIMIT {amount} OFFSET {page * amount}')
+
+
+    def get_fullchannels(self):
+        self.cursor.execute('''SELECT * FROM "channels" ''')
         k = self.cursor.fetchall()
-        print("k", len(k))
-        d = {"page": page, 'amount': len(k), "channels": []}
+        l = list()
         logger.info(k)
         for i in k:
-            d["channels"].append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
-        logger.info(d["channels"])
-        return d
-
-
-    def get_channels_number(self):
-        self.cursor.execute(f'SELECT COUNT(id) FROM "channels"')
-        k = self.cursor.fetchone()
-        logger.debug(k)
-        return {"number": k[0]}
+            l.append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
+        logger.info(l)
+        if k:
+            return l
+        return False
 
 
 
