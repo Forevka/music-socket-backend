@@ -56,17 +56,23 @@ class DBWorker(metaclass=SingletonMeta):
         return False
 
 
-    def get_fullchannels(self):
-        self.cursor.execute('''SELECT * FROM "channels" ''')
+    def get_channel_list(self, page = 0, amount = 10):
+        self.cursor.execute(f'SELECT * FROM "channels" LIMIT {amount + 1} OFFSET {page * amount}')
         k = self.cursor.fetchall()
-        l = list()
+        print("k", len(k))
+        d = {"page": page, 'amount': amount, "channels": []}
         logger.info(k)
         for i in k:
-            l.append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
-        logger.info(l)
-        if k:
-            return l
-        return False
+            d["channels"].append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
+        logger.info(d["channels"])
+        return d
+
+
+    def get_channels_number(self):
+        self.cursor.execute(f'SELECT COUNT(id) FROM "channels"')
+        k = self.cursor.fetchone()
+        logger.debug(k)
+        return {"number": k[0]}
 
 
     def get_channel(self, id):

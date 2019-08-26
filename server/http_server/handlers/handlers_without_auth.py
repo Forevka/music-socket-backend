@@ -40,15 +40,29 @@ class HandlersWithoutAuth:
         res = self.db.get_channel(data['id'])
         logger.info(res)
         if res:
-            return web.json_response({'channel': res})
+            return web.json_response(res)
         return web.json_response({'message': 'Cant find this channel'}, status=406)
 
 
-    async def get_fullchannels(self, request):
-        res = self.db.get_get_fullchannels()
+    async def get_channel_list(self, request):
+        """
+            {"page": 0}
+        """
+        data = await request.json()
+        res = self.db.get_channel_list(data['page'])
         logger.info(res)
         if res:
-            return web.json_response({'channels': res})
+            return web.json_response(res)
+        return web.json_response({'message': '???'}, status=406)
+
+    async def get_channels_number(self, request):
+        """
+            {}
+        """
+        res = self.db.get_channels_number()
+        logger.info(res)
+        if res:
+            return web.json_response(res)
         return web.json_response({'message': '???'}, status=406)
 
 
@@ -58,4 +72,5 @@ class HandlersWithoutAuth:
         register_with_cors(app, 'POST', '/add_new_user', this_handler.add_new_user)
         register_with_cors(app, 'POST', '/authentication', this_handler.login_user)
         register_with_cors(app, 'POST', '/get_channel', this_handler.get_channel)
-        register_with_cors(app, 'POST', '/get_fullchannels', this_handler.get_fullchannels)
+        register_with_cors(app, 'POST', '/get_channels_list', this_handler.get_channel_list)
+        register_with_cors(app, 'POST', '/get_channels_number', this_handler.get_channels_number)
