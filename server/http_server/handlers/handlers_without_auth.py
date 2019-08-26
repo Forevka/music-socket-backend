@@ -4,16 +4,20 @@ from aiohttp import web
 from ..DBdriver.db_worker import DBWorker
 from ..utils import encode, decode
 from ..middlewares import register_with_cors
+import smtplib, ssl
+from ..utils import settings
+import random
 
-class HandlersWithoutAuth:
+class HandlersWithoutAuth():
     def __init__(self):
+        self.recovery_list = dict()
         self.db = DBWorker()
 
 
     async def add_new_user(self, request):
         data = await request.json()
         logger.info(data)
-        res = self.db.add_new_user(data['login'], data['password'])
+        res = self.db.add_new_user(data['login'], data['password'], data['email'] )
         if res:
             response = encode(res)
             token = response.decode("utf-8")
@@ -76,6 +80,28 @@ class HandlersWithoutAuth:
             return web.json_response(res)
         return web.json_response({'message': '???'}, status=406)
 
+    async def recovery_password_sending(self, request):
+        data = await request.json()
+        res = self.db.check_email(data['email'])
+        if res:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL("smtp.gmail.com", settings.port_mail, context=context) as server:
+                server.login(settings.mail_radio, settings.password_mail)
+                key = random.randint(1000, 9999)
+                message = "your key -->> {}".format(str(key))
+                server.sendmail(settings.mail_radio, data['email'], message)
+                self.recovery_list[data['email']] = key
+                logger.info(self.recovery_list[data['email']])
+                return web.json_response({'message': "message send"})
+            return web.json_response({'message': "invalid email"})
+
+
+    async def recovery_password_check(self, request):
+        data = await request.json()
+        if self.recovery_list[data['email']] == data['key']:
+            user = self.db.check_email(data['email'])
+            return web.json_response({'user': user})
+        return web.json_response({'message': "invalid key"})
 
     @staticmethod
     def register(app):
@@ -86,3 +112,5 @@ class HandlersWithoutAuth:
         register_with_cors(app, 'POST', '/get_channels_list', this_handler.get_channel_list)
         register_with_cors(app, 'POST', '/get_channels_number', this_handler.get_channels_number)
         register_with_cors(app, 'POST', '/get_all_channel_list', this_handler.get_all_channel_list)
+        register_with_cors(app, 'POST', '/recovery_password_check', this_handler.recovery_password_check)
+        register_with_cors(app, 'POST', '/recovery_password_sending', this_handler.recovery_password_sending)
