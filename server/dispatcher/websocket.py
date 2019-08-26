@@ -41,10 +41,10 @@ class Websocket:
                 data = {}
 
                 User.set_current(user)
-                Channel.set_current(user.get_channel())
+                #Channel.set_current(user.get_channel())
 
                 logger.debug(f"current user {User.get_current()}")
-                logger.debug(f"current channel {Channel.get_current()}")
+                #logger.debug(f"current channel {Channel.get_current()}")
 
                 try:
                     data = json.loads(request)

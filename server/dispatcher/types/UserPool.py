@@ -29,4 +29,5 @@ class UserPool:
         """
             calling when user leave from server
         """
+        user = self.user_dict[user_websocket].move_to_channel(-1)
         del self.user_dict[user_websocket]

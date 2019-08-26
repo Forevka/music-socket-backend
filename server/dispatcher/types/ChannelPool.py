@@ -10,20 +10,29 @@ class ChannelPool:
         ChannelPool.instance = self
         self.channel_dict = {}
 
+
     def channel_id(self, id):
         return self.channel_dict.get(id)
 
-    def add_channel(self, name = None):
-        new_channel = Channel(len(self.channel_dict), name = name)
-        self.channel_dict[len(self.channel_dict)] = new_channel
-        return new_channel
+
+    def add_channel(self, id, name = None):
+        logger.debug(f'new channel {id}')
+        ch = self.channel_dict.get(id)
+        if ch is None:
+            ch = Channel(id, name)
+            self.channel_dict[id] = ch
+
+        return ch
+
 
     def channel_list(self):
         for i in self.channel_dict.values():
             logger.info(i)
 
+
     def to_dict(self):
         return [i.to_dict() for i in self.channel_dict.values()]
+
 
     @staticmethod
     def get_instance():
