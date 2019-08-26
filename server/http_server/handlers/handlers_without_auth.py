@@ -13,8 +13,51 @@ class HandlersWithoutAuth():
         self.recovery_list = dict()
         self.db = DBWorker()
 
+    async def ping(self, request):
+        """
+        ---
+        description: This end-point allow to test that service is up.
+        tags:
+        - Health check
+        produces:
+        - application/json
+        responses:
+            "200":
+                description: successful operation. Return "pong" text
+            "405":
+                description: invalid HTTP Method
+        """
+        return web.json_response({'status': 'pong'})
 
     async def add_new_user(self, request):
+        """
+        tags:
+        - User
+        summary: Create user
+        description: Creating a new user.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: User object
+          required: true
+          schema:
+            type: object
+            properties:
+              login:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+        responses:
+          "200":
+            description: successful operation
+          "406":
+            description: can`t create user
+        """
         data = await request.json()
         logger.info(data)
         res = self.db.add_new_user(data['login'], data['password'], data['email'] )
@@ -26,6 +69,32 @@ class HandlersWithoutAuth():
 
 
     async def login_user(self, request):
+        """
+        tags:
+        - User
+        summary: Login user
+        description: Login user with given credentionals.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: Login object
+          required: true
+          schema:
+            type: object
+            properties:
+              login:
+                type: string
+              password:
+                type: string
+        responses:
+          "200":
+            description: Successful operation
+          "406":
+            description: Login or password incorect
+        """
         data = await request.json()
         logger.info(data)
         res = self.db.authentication(data['login'], data['password'])
@@ -44,15 +113,15 @@ class HandlersWithoutAuth():
         res = self.db.get_channel(data['id'])
         logger.info(res)
         if res:
-            return web.json_response({'channel': res})
+            return web.json_response(res)
         return web.json_response({'message': 'Cant find this channel'}, status=406)
 
 
-    async def get_fullchannels(self, request):
-        res = self.db.get_fullchannels()
+    async def get_all_channel_list(self, request):
+        res = self.db.get_channel_list()
         logger.info(res)
         if res:
-            return web.json_response({'channels': res})
+            return web.json_response(res)
         return web.json_response({'message': '???'}, status=406)
 
     async def recovery_password_sending(self, request):
@@ -82,9 +151,10 @@ class HandlersWithoutAuth():
     @staticmethod
     def register(app):
         this_handler = HandlersWithoutAuth()
+        register_with_cors(app, 'POST', '/ping', this_handler.ping)
         register_with_cors(app, 'POST', '/add_new_user', this_handler.add_new_user)
         register_with_cors(app, 'POST', '/authentication', this_handler.login_user)
         register_with_cors(app, 'POST', '/get_channel', this_handler.get_channel)
-        register_with_cors(app, 'POST', '/get_fullchannels', this_handler.get_fullchannels)
+        register_with_cors(app, 'POST', '/get_all_channel_list', this_handler.get_all_channel_list)
         register_with_cors(app, 'POST', '/recovery_password_check', this_handler.recovery_password_check)
         register_with_cors(app, 'POST', '/recovery_password_sending', this_handler.recovery_password_sending)
