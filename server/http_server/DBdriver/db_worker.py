@@ -90,6 +90,13 @@ class DBWorker(metaclass=SingletonMeta):
         return False
 
 
+
+    def delete_user(self, name):
+        self.cursor.execute('''DELETE * FROM "users_info" WHERE name = {} '''.format(name))
+        self.conn.commit()
+
+
+
     def get_channel(self, id):
         self.cursor.execute('''SELECT * FROM "channels" WHERE id = {} '''.format(id))
         k = self.cursor.fetchone()

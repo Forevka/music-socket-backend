@@ -108,6 +108,30 @@ class HandlersWithoutAuth():
 
 
     async def get_channel(self, request):
+        """
+        tags:
+        - Channel
+        summary: Get channel
+        description: Get information about a specific channel.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: Channel object
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+        responses:
+          "200":
+            description: Successful operation
+          "406":
+            description: Id incorect
+        """
         data = await request.json()
         logger.info(data['id'])
         res = self.db.get_channel(data['id'])
@@ -118,6 +142,28 @@ class HandlersWithoutAuth():
 
 
     async def get_all_channel_list(self, request):
+        """
+        tags:
+        - Channel
+        summary: Get channels
+        description: Get information about a channels.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: Channels object
+          required: true
+          schema:
+            type: object
+            properties:
+        responses:
+          "200":
+            description: Successful operation
+          "406":
+            description: request incorect
+        """
         res = self.db.get_channel_list()
         logger.info(res)
         if res:
@@ -125,6 +171,30 @@ class HandlersWithoutAuth():
         return web.json_response({'message': '???'}, status=406)
 
     async def recovery_password_sending(self, request):
+        """
+        tags:
+        - Recovery password
+        summary: Sending key on email
+        description: Sending key on email.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: Recovery password object
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+        responses:
+          "200":
+            description: Successful operation
+          "406":
+            description: email incorect
+        """
         data = await request.json()
         res = self.db.check_email(data['email'])
         if res:
@@ -141,6 +211,32 @@ class HandlersWithoutAuth():
 
 
     async def recovery_password_check(self, request):
+        """
+        tags:
+        - Recovery password
+        summary: Сheck key by email
+        description: Сheck key by email.
+        operationId: examples.api.api.createUser
+        produces:
+        - application/json
+        parameters:
+        - in: body
+          name: body
+          description: Recovery password object
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              key:
+                type: integer
+        responses:
+          "200":
+            description: Successful operation
+          "406":
+            description: key or email incorect
+        """
         data = await request.json()
         if self.recovery_list[data['email']] == data['key']:
             new_pass = random.randint(10000000, 99999999)

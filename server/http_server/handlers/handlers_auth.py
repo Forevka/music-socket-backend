@@ -5,6 +5,8 @@ from ..DBdriver.db_worker import DBWorker
 from ..utils import encode, decode
 from ..middlewares import register_with_cors
 
+
+
 class HandlersAuth:
     def __init__(self):
         self.db = DBWorker()
@@ -61,6 +63,8 @@ class HandlersAuth:
         decoded = decode(token)
 
         return web.json_response(decoded)
+
+
 
 
     @staticmethod
