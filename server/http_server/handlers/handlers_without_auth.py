@@ -29,6 +29,10 @@ class HandlersWithoutAuth():
         """
         return web.json_response({'status': 'pong'})
 
+    async def show_site(self, request):
+        return web.Response(text=open("dist/index.html").read(), content_type='text/html')
+
+
     async def add_new_user(self, request):
         """
         tags:
@@ -254,3 +258,5 @@ class HandlersWithoutAuth():
         register_with_cors(app, 'POST', '/get_all_channel_list', this_handler.get_all_channel_list)
         register_with_cors(app, 'POST', '/recovery_password_check', this_handler.recovery_password_check)
         register_with_cors(app, 'POST', '/recovery_password_sending', this_handler.recovery_password_sending)
+        app.router.add_route('get', "/", this_handler.show_site)
+        app.router.add_static('/static', "dist/static", show_index=True)
