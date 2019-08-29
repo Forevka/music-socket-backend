@@ -59,7 +59,7 @@ async def echo(event: WebsocketEvent, data):
     return True
 
 
-if __name__ == "__main__":
+def run_websocket_server():
     s.ch_pool.add_channel(-1, name = 'Trash')
     s.ch_pool.channel_list()
 

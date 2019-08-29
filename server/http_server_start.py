@@ -27,7 +27,7 @@ security = {
 EXAMPLE
 """
 
-if __name__ == '__main__':
+def run_http_server():
     security = {
         "api_key": {
           "type": "apiKey",
