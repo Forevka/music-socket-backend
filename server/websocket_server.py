@@ -63,5 +63,5 @@ def run_websocket_server():
     s.ch_pool.add_channel(-1, name = 'Trash')
     s.ch_pool.channel_list()
 
-    asyncio.get_event_loop().run_until_complete(s.start_server("127.0.0.1", 5678))
+    asyncio.get_event_loop().run_until_complete(s.start_server("0.0.0.0", 5678))
     asyncio.get_event_loop().run_forever()
