@@ -1,7 +1,6 @@
 import asyncio
 from aiohttp import web
 from loguru import logger
-from http_server.DBdriver import DBWorker
 from http_server.handlers import HandlersWithoutAuth, HandlersAuth, HandlersForAdmin
 from http_server.middlewares import register_with_cors, add_cors, check_token
 
@@ -46,7 +45,7 @@ if __name__ == '__main__':
 
     HandlersWithoutAuth.register(app)
     HandlersAuth.register(app2)
-    HandlersForAdmin.register(app3)
+
 
     app.add_subapp('/methods/', app2)
     app.add_subapp('/foradmins/', app3)
