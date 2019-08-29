@@ -1,6 +1,6 @@
 import sqlite3
 from loguru import logger
-from ..utils import settings
+# from ..utils import settings
 
 class SingletonMeta(type):
     """

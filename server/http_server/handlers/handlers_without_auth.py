@@ -1,7 +1,7 @@
 from loguru import logger
 from aiohttp import web
 
-from ..DBdriver.db_worker import DBWorker
+from DBdriver.db_worker import DBWorker
 from ..utils import encode, decode
 from ..middlewares import register_with_cors
 import smtplib, ssl
