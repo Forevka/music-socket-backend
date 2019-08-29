@@ -91,8 +91,8 @@ class DBWorker(metaclass=SingletonMeta):
 
 
 
-    def delete_user(self, name):
-        self.cursor.execute('''DELETE * FROM "users_info" WHERE name = {} '''.format(name))
+    def delete_user(self, login):
+        self.cursor.execute('''DELETE FROM "users_info" WHERE login = '{}' '''.format(login))
         self.conn.commit()
 
 
