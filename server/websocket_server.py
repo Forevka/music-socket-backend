@@ -21,8 +21,24 @@ Dispatcher.set_current(dp)
 async def echo(event: WebsocketEvent, data):
     logger.info('login')
     s.ch_pool.add_channel(int(event.body['channelId']))
-    res = User.get_current().move_to_channel(int(event.body['channelId']))
-    await event.answer(event.user().to_dict())
+    user = User.get_current()
+    user.avatar = event.body['avatar']
+
+    res = user.move_to_channel(int(event.body['channelId']))
+    channel = user.get_channel()
+
+    await user.custom_answer('UserList', channel.user_list_except(user.id))
+
+    await channel.to_all_users(user.to_dict())
+
+@dp.change_status_handler()
+async def echo(event: WebsocketEvent, data):
+    logger.info('status')
+    logger.info(event)
+    user = User.get_current()
+    channel = user.get_channel()
+    user.status = event.body['status']
+    await channel.to_all_users(user.to_dict())
 
 @dp.chat_message_handler()
 async def echo(event: WebsocketEvent, data):

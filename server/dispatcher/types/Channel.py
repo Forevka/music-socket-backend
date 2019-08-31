@@ -24,6 +24,8 @@ class Channel(ContextInstanceMixin):
         for user in self.users:
             await user.answer(body = body)
 
+    def user_list_except(self, except_id):
+        return [user.to_dict() for user in self.users if user.id != except_id]
 
     def add_user_id(self, user_id):
         from . import ChannelPool

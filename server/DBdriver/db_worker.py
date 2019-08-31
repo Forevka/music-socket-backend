@@ -1,6 +1,7 @@
 import sqlite3
 from loguru import logger
-# from ..utils import settings
+from math import ceil
+from http_server.utils import settings
 
 class SingletonMeta(type):
     """
@@ -61,11 +62,17 @@ class DBWorker(metaclass=SingletonMeta):
         self.conn.commit()
 
 
-    def get_channel_list(self, page = 0, amount = 10):
-        self.cursor.execute(f'SELECT * FROM "channels" LIMIT {amount} OFFSET {page * amount}')
+    def get_channel_list(self, page = 0, amount = 10, sort_by = 'id', asc = True):
+        sql_command = f'SELECT * FROM "channels" ORDER BY {sort_by} {"ASC" if asc else "DESC"} LIMIT {amount} OFFSET {(page - 1) * amount}'
+        logger.debug(sql_command)
+        self.cursor.execute(sql_command)
         k = self.cursor.fetchall()
         print("k", len(k))
-        d = {"page": page, 'amount': amount, "channels": []}
+        d = {"page": page,
+                'amount': amount,
+                "channels": [],
+                "total_channels": ceil(self.get_channels_number())
+            }
         logger.info(k)
         for i in k:
             d['channels'].append({"id": i[0], "name": i[1], "description": i[2], "img_url": i[3]})
@@ -77,7 +84,7 @@ class DBWorker(metaclass=SingletonMeta):
         self.cursor.execute(f'SELECT COUNT(id) FROM "channels"')
         k = self.cursor.fetchone()
         logger.debug(k)
-        return {"number": k[0]}
+        return int(k[0])
 
 
 
@@ -103,3 +110,10 @@ class DBWorker(metaclass=SingletonMeta):
         if k:
             return {"id": k[0], "name": k[1], "description": k[2], "img_url": k[3]}
         return False
+
+    def add_channel(self, name, description = '', image = ''):
+        self.cursor.execute('''INSERT OR IGNORE INTO "channels" (name, description, image)
+                        VALUES ('{}', '{}', '{}')'''.format(name, description, image))
+        self.conn.commit()
+        logger.info(self.cursor.lastrowid)
+        return {"id": self.cursor.lastrowid, "name": name, "description": description, "img_url": image}

@@ -12,13 +12,15 @@ class User(ContextInstanceMixin):
     on_channel_id: int
     socket: Any
 
-    def __init__(self, id, websocket, on_channel_id = 0, username = 'Anonym'):
+    def __init__(self, id, websocket, on_channel_id = -1, login = 'Anonym', role = 0):
         from . import Roles
 
         self.id = id
-        self.username = username
+        self.login = login
         self.websocket = websocket
-        self.role = Roles.Guest
+        self.role = role
+        self.status = 1 # 1 - online 2 - dnd
+        self.avatar = ''
         self.on_channel_id = on_channel_id
         self.move_to_channel(on_channel_id)
 
@@ -39,10 +41,12 @@ class User(ContextInstanceMixin):
 
     def to_dict(self):
         return {
-            "user_id": self.id,
-            "user_name": self.username,
+            "id": self.id,
+            "login": self.login,
             "channel": self.on_channel_id,
-            "role": self.role.name
+            "role": self.role,
+            "status": self.status,
+            "avatar": self.avatar
         }
 
     def set_role(self, role):
@@ -68,6 +72,15 @@ class User(ContextInstanceMixin):
     async def answer(self, body = ''):
         response = self.response_dict()
         response.update({"body": body})
+
+        await self.websocket.send(json.dumps(response))
+
+    async def custom_answer(self, event, body = ''):
+        response = {
+            "event": event,
+            "timestamp": time.time(),
+            "body": body,
+        }
 
         await self.websocket.send(json.dumps(response))
 

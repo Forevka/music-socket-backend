@@ -18,7 +18,7 @@ class UserPool:
     def add_user(self, user_websocket):
         from . import User
 
-        new_user = User(len(self.user_dict), user_websocket)
+        new_user = User(-1, user_websocket)
         self.user_dict[user_websocket] = new_user
         return new_user
 

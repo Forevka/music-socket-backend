@@ -145,11 +145,11 @@ class HandlersWithoutAuth():
         return web.json_response({'message': 'Cant find this channel'}, status=406)
 
 
-    async def get_all_channel_list(self, request):
+    async def get_channel_page(self, request):
         """
         tags:
         - Channel
-        summary: Get channels
+        summary: Get page with channels
         description: Get information about a channels.
         operationId: examples.api.api.createUser
         produces:
@@ -162,13 +162,25 @@ class HandlersWithoutAuth():
           schema:
             type: object
             properties:
+              page:
+                type: integer
+              amount:
+                type: integer
+              sort_by:
+                type: string
+              asc:
+                type: boolean
         responses:
           "200":
             description: Successful operation
           "406":
             description: request incorect
         """
-        res = self.db.get_channel_list()
+        data = await request.json()
+        res = self.db.get_channel_list(page = data['page'],
+                                        amount = data['amount'],
+                                        sort_by = data['sort_by'],
+                                        asc = bool(data['asc']))
         logger.info(res)
         if res:
             return web.json_response(res)
@@ -255,7 +267,7 @@ class HandlersWithoutAuth():
         register_with_cors(app, 'POST', '/add_new_user', this_handler.add_new_user)
         register_with_cors(app, 'POST', '/authentication', this_handler.login_user)
         register_with_cors(app, 'POST', '/get_channel', this_handler.get_channel)
-        register_with_cors(app, 'POST', '/get_all_channel_list', this_handler.get_all_channel_list)
+        register_with_cors(app, 'POST', '/get_channel_page', this_handler.get_channel_page)
         register_with_cors(app, 'POST', '/recovery_password_check', this_handler.recovery_password_check)
         register_with_cors(app, 'POST', '/recovery_password_sending', this_handler.recovery_password_sending)
         app.router.add_route('get', "/", this_handler.show_site)

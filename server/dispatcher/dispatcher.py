@@ -4,6 +4,7 @@ from .events import Event, SkipHandler
 #from viberio.types import requests, messages
 #from viberio.types.requests import EventType
 from .utils.mixins import DataMixin, ContextInstanceMixin
+from dispatcher.types import Channel, ChannelPool, User, UserPool
 from .types import WebsocketEvent
 
 import asyncio
@@ -23,6 +24,7 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         self.get_channel_handler = Event()
         self.move_to_channel_handler = Event()
         self.chat_message_handler = Event()
+        self.change_status_handler = Event()
         self.unhandled_event = Event()
         '''
         self.url_messages_handler = Event()  # URLMessage
@@ -61,7 +63,12 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
     async def _process_event(self, request, data: dict):
         logger.debug(f"processing event {request}")
         try:
-            decoded = decode(request.token)
+            if request.token:
+                decoded = decode(request.token)
+                u = User.get_current()
+                u.id = decoded['id']
+                u.login = decoded['login']
+                u.role = decoded['role']
         except Exception as e:
             logger.debug("invalid token - {} error {}".format(token, e))
             raise SkipHandler()
@@ -79,6 +86,8 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
             result = await self.move_to_channel_handler.notify(request, data)
         elif request.event == "ChatMessage":
             result = await self.chat_message_handler.notify(request, data)
+        elif request.event == "ChangeStatus":
+            result = await self.change_status_handler.notify(request, data)
         elif request:
             result = await self.unhandled_event.notify(request, data)
         else:
