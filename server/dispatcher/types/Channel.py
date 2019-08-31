@@ -24,6 +24,10 @@ class Channel(ContextInstanceMixin):
         for user in self.users:
             await user.answer(body = body)
 
+    async def to_all_users_custom(self, event, body):
+        for user in self.users:
+            await user.custom_answer(event, body = body)
+
     def user_list_except(self, except_id):
         return [user.to_dict() for user in self.users if user.id != except_id]
 

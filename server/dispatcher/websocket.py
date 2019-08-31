@@ -29,7 +29,12 @@ class Websocket:
 
 
     async def unregister(self, websocket):
-        UserPool.get_instance().delete_user(websocket)
+        user = UserPool.get_instance().get_user_by_socket(websocket)
+        channel = user.get_channel()
+        user.move_to_channel(-1)
+        await channel.to_all_users_custom('DeleteUserList', user.to_dict())
+
+
         print("left user "+str(websocket))
 
 
