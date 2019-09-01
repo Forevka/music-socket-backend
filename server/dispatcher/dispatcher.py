@@ -25,6 +25,7 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
         self.move_to_channel_handler = Event()
         self.chat_message_handler = Event()
         self.change_status_handler = Event()
+        self.message_list_history = Event()
         self.unhandled_event = Event()
         '''
         self.url_messages_handler = Event()  # URLMessage
@@ -88,6 +89,8 @@ class Dispatcher(DataMixin, ContextInstanceMixin):
             result = await self.chat_message_handler.notify(request, data)
         elif request.event == "ChangeStatus":
             result = await self.change_status_handler.notify(request, data)
+        elif request.event == "MessageListHistory":
+            result = await self.message_list_history.notify(request, data)
         elif request:
             result = await self.unhandled_event.notify(request, data)
         else:

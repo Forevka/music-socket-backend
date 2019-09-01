@@ -12,10 +12,12 @@ from dispatcher import Dispatcher, Websocket
 from dispatcher.filters.builtin import EventTypeFilter
 from dispatcher.types import WebsocketEvent
 from dispatcher.types import Channel, ChannelPool, User, UserPool, Roles
+from DBdriver import MongoDBWorker
 
 s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
+mongo = MongoDBWorker('localhost', 27017)
 
 @dp.login_handler()
 async def echo(event: WebsocketEvent, data):
@@ -28,6 +30,9 @@ async def echo(event: WebsocketEvent, data):
     channel = user.get_channel()
 
     await user.custom_answer('UserList', channel.user_list_except(user.id))
+    message_history = await mongo.get_message_for_channel(channel.id, page = 1)
+    logger.debug(message_history)
+    await user.custom_answer('MessageListHistory', message_history)
 
     await channel.to_all_users(user.to_dict())
 
@@ -40,10 +45,23 @@ async def echo(event: WebsocketEvent, data):
     user.status = event.body['status']
     await channel.to_all_users(user.to_dict())
 
+@dp.message_list_history()
+async def echo(event: WebsocketEvent, data):
+    logger.info('message list history')
+    logger.info(event)
+    user = User.get_current()
+    channel = user.get_channel()
+
+    message_history = await mongo.get_message_for_channel(channel.id, page = event.body)
+    await asyncio.sleep(4)
+    await event.answer(message_history)
+
 @dp.chat_message_handler()
 async def echo(event: WebsocketEvent, data):
     logger.info('chat')
     logger.info(event)
+    await mongo.insert_message(event.body)
+    logger.info(event.body)
     channel = User.get_current().get_channel()
     logger.info(channel)
     await channel.to_all_users(event.body)
