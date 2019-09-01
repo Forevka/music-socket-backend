@@ -25,6 +25,7 @@ async def echo(event: WebsocketEvent, data):
     s.ch_pool.add_channel(int(event.body['channelId']))
     user = User.get_current()
     user.avatar = event.body['avatar']
+    user.status = event.body['status']
 
     res = user.move_to_channel(int(event.body['channelId']))
     channel = user.get_channel()
