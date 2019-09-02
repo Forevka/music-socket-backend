@@ -1,6 +1,7 @@
 from typing import Any, List, Dict
 from loguru import logger
 from . import Channel
+from DBdriver.db_nosql_worker import MongoDBWorker
 
 class ChannelPool:
     instance: 'ChannelPool' = None
@@ -9,6 +10,7 @@ class ChannelPool:
     def __init__(self):
         ChannelPool.instance = self
         self.channel_dict = {}
+        self.mongo = MongoDBWorker('localhost', 27017)
 
 
     def channel_id(self, id):
