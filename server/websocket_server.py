@@ -12,12 +12,11 @@ from dispatcher import Dispatcher, Websocket
 from dispatcher.filters.builtin import EventTypeFilter
 from dispatcher.types import WebsocketEvent
 from dispatcher.types import Channel, ChannelPool, User, UserPool, Roles
-from DBdriver import MongoDBWorker
 
 s = Websocket()
 dp = Dispatcher(s)
 Dispatcher.set_current(dp)
-mongo = MongoDBWorker('localhost', 27017)
+
 
 @dp.login_handler()
 async def echo(event: WebsocketEvent, data):
@@ -29,9 +28,11 @@ async def echo(event: WebsocketEvent, data):
 
     res = user.move_to_channel(int(event.body['channelId']))
     channel = user.get_channel()
+    if (user.id != -1):
+        await s.mongo.change_user_list_channel(int(event.body['channelId']), user.to_dict(), True)
 
     await user.custom_answer('UserList', channel.user_list_except(user.id))
-    message_history = await mongo.get_message_for_channel(channel.id, page = 1)
+    message_history = await s.mongo.get_message_for_channel(channel.id, page = 1)
     logger.debug(message_history)
     await user.custom_answer('MessageListHistory', message_history)
 
@@ -44,6 +45,8 @@ async def echo(event: WebsocketEvent, data):
     user = User.get_current()
     channel = user.get_channel()
     user.status = event.body['status']
+    if (user.status == -1):
+        await s.mongo.change_user_list_channel(user.on_channel_id, user.to_dict(), False)
     await channel.to_all_users(user.to_dict())
 
 @dp.message_list_history()
@@ -53,7 +56,7 @@ async def echo(event: WebsocketEvent, data):
     user = User.get_current()
     channel = user.get_channel()
 
-    message_history = await mongo.get_message_for_channel(channel.id, page = event.body)
+    message_history = await s.mongo.get_message_for_channel(channel.id, page = event.body)
     await asyncio.sleep(4)
     await event.answer(message_history)
 
@@ -61,7 +64,7 @@ async def echo(event: WebsocketEvent, data):
 async def echo(event: WebsocketEvent, data):
     logger.info('chat')
     logger.info(event)
-    await mongo.insert_message(event.body)
+    await s.mongo.insert_message(event.body)
     logger.info(event.body)
     channel = User.get_current().get_channel()
     logger.info(channel)

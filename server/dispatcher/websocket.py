@@ -12,11 +12,13 @@ from dispatcher import Dispatcher
 from dispatcher.filters.builtin import EventTypeFilter
 from dispatcher.types import WebsocketEvent
 from dispatcher.types import Channel, ChannelPool, User, UserPool
+from DBdriver import MongoDBWorker
 
 class Websocket:
     def __init__(self):
         self.ch_pool = ChannelPool()
         self.user_pool = UserPool()
+        self.mongo = MongoDBWorker('localhost', 27017)
 
     @property
     def dispatcher(self) -> Dispatcher:
@@ -31,9 +33,11 @@ class Websocket:
     async def unregister(self, websocket):
         user = UserPool.get_instance().get_user_by_socket(websocket)
         channel = user.get_channel()
-        user.move_to_channel(-1)
-        await channel.to_all_users_custom('DeleteUserList', user.to_dict())
 
+        await self.mongo.change_user_list_channel(user.on_channel_id, user.to_dict(), False)
+        user.move_to_channel(-1)
+
+        await channel.to_all_users_custom('DeleteUserList', user.to_dict())
 
         print("left user "+str(websocket))
 

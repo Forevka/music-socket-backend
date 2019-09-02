@@ -2,6 +2,7 @@ from loguru import logger
 from aiohttp import web
 
 from DBdriver.db_worker import DBWorker
+from DBdriver.db_nosql_worker import MongoDBWorker
 from ..utils import encode, decode
 from ..middlewares import register_with_cors
 import smtplib, ssl
@@ -12,6 +13,7 @@ class HandlersWithoutAuth():
     def __init__(self):
         self.recovery_list = dict()
         self.db = DBWorker()
+        self.mongo = MongoDBWorker('localhost', 27017)
 
     async def ping(self, request):
         """
@@ -183,6 +185,8 @@ class HandlersWithoutAuth():
                                         asc = bool(data['asc']))
         logger.info(res)
         if res:
+            for i in res['channels']:
+                i.update({'user_amount': await self.mongo.get_user_count_channel(i['id'])})
             return web.json_response(res)
         return web.json_response({'message': '???'}, status=406)
 

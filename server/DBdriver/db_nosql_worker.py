@@ -25,8 +25,15 @@ class MongoDBWorker:
             result = await self.db[f'channel_{channel_id}']['channel_info'].update_one({'id': int(channel_id)}, {'$push': {'user_list': user_obj}})
             return result
         else:
-            result = await self.db[f'channel_{channel_id}']['channel_info'].update_one({'id': int(channel_id)}, {'$pull': {'user_list': user_obj}})
+            result = await self.db[f'channel_{channel_id}']['channel_info'].update_one({'id': int(channel_id)}, {'$pull': {'user_list': {"id": int(user_obj['id'])}}})
             return result
+
+    async def get_user_count_channel(self, channel_id):
+        result = await self.db[f'channel_{channel_id}']['channel_info'].find_one({'id': int(channel_id)})
+        print(result)
+        if result:
+            return len(result['user_list'])
+        return 0
 
 
     async def insert_message(self, message_obj):
@@ -63,7 +70,8 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     mongo = MongoDBWorker('localhost', 27017)
     #print(loop.run_until_complete(mongo.add_channel(5)))
-    print(loop.run_until_complete(mongo.change_user_list_channel(5, get_user(), False)))
+    print(loop.run_until_complete(mongo.get_user_count_channel(5)))
+    #print(loop.run_until_complete(mongo.change_user_list_channel(5, get_user(), False)))
     #
     #for i in range(0, 50, 1):
     #    inserted = loop.run_until_complete(mongo.insert_message(get_message()))
